@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<realtimeArrivalList>
+  <row>
+    <subwayId>1004</subwayId>
+    <statnId>1004000409</statnId>
+    <statnNm>상계역</statnNm>
+    <trainLineNm>4호선 오이도방면</trainLineNm>
+    <subwayHeading>오이도방향</subwayHeading>
+    <barvlDt>420</barvlDt>
+    <btrainSttus>일반</btrainSttus>
+  </row>
+</realtimeArrivalList>

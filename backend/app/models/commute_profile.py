@@ -4,7 +4,7 @@ from datetime import datetime, time
 from uuid import uuid4
 
 from sqlalchemy import DateTime, String, Time
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
@@ -22,6 +22,9 @@ class CommuteProfile(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(), nullable=False, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(), nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+    )
+    stops: Mapped[list['CommuteStop']] = relationship(
+        back_populates='commute_profile', cascade='all, delete-orphan'
     )
 
     def __init__(self, **kwargs):

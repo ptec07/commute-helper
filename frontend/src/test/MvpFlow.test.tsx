@@ -1,0 +1,95 @@
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { App } from '../App'
+
+beforeEach(() => {
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input)
+
+    if (url === '/api/commute-profiles' && init?.method === 'POST') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: 'profile-1',
+          name: '회사 가기',
+          origin_label: '집',
+          destination_label: '회사',
+          target_arrival_time: '09:00:00',
+          preferred_mode: 'balanced',
+          walking_tolerance_min: 10,
+          created_at: '2026-04-24T00:00:00',
+          updated_at: '2026-04-24T00:00:00',
+          stops: [],
+        }),
+      } as Response
+    }
+
+    if (url.startsWith('/api/search/stops?q=')) {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          busStops: [],
+          subwayStations: [{ externalId: 'station-100', name: '상계역', lineName: '4호선' }],
+        }),
+      } as Response
+    }
+
+    if (url === '/api/commute-profiles/profile-1/stops' && init?.method === 'POST') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          id: 'stop-1',
+          externalId: 'station-100',
+          name: '상계역',
+          lineName: '4호선',
+        }),
+      } as Response
+    }
+
+    if (url === '/api/dashboard/profile-1') {
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          profile: { id: 'profile-1', name: '회사 가기', targetArrivalTime: '09:00' },
+          bus: [],
+          subway: [],
+          recommendation: {
+            mode: 'subway',
+            message: '지금 출발하면 지하철이 더 유리합니다.',
+            reason: '지하철 도착이 더 안정적입니다.',
+            leaveBy: '08:18',
+          },
+        }),
+      } as Response
+    }
+
+    throw new Error(`Unhandled fetch: ${url}`)
+  })
+
+  vi.stubGlobal('fetch', fetchMock)
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
+
+test('completes the MVP flow from profile creation to dashboard recommendation', async () => {
+  const user = userEvent.setup()
+  render(<App />)
+
+  await user.click(screen.getByRole('button', { name: '통근 프로필 만들기' }))
+  await user.type(screen.getByLabelText('프로필 이름'), '회사 가기')
+  await user.click(screen.getByRole('button', { name: '저장' }))
+
+  await user.type(await screen.findByLabelText('정류장 또는 역 검색'), '상계역')
+  await user.click(await screen.findByRole('button', { name: '상계역' }))
+  await user.click(screen.getByRole('button', { name: '선택 완료' }))
+
+  await waitFor(() => {
+    expect(screen.getByText('지금 출발하면 지하철이 더 유리합니다.')).toBeInTheDocument()
+  })
+})

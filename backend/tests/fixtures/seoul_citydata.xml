@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Citydata>
+  <AREA_NM>강남역</AREA_NM>
+  <LIVE_PPLTN_STTS>
+    <AREA_CONGEST_LVL>보통</AREA_CONGEST_LVL>
+  </LIVE_PPLTN_STTS>
+  <ROAD_TRAFFIC_STTS>
+    <AVG_SPD>21.5</AVG_SPD>
+  </ROAD_TRAFFIC_STTS>
+</Citydata>

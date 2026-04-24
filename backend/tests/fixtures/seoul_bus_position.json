@@ -1,0 +1,16 @@
+{
+  "msgHeader": {
+    "headerCd": "0",
+    "headerMsg": "정상서비스"
+  },
+  "msgBody": {
+    "itemList": [
+      {
+        "busRouteId": "100000146",
+        "vehId": "BUS-146-1",
+        "sectOrd": 2,
+        "congetion": "3"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceResult>
+  <msgHeader>
+    <headerCd>0</headerCd>
+    <headerMsg>정상서비스</headerMsg>
+  </msgHeader>
+  <msgBody>
+    <itemList>
+      <busRouteId>100000146</busRouteId>
+      <rtNm>146</rtNm>
+      <stId>200000123</stId>
+      <stNm>상계주공7단지</stNm>
+      <arrmsg1>4분 후 도착</arrmsg1>
+      <arrmsgSec1>240</arrmsgSec1>
+      <isLast1>0</isLast1>
+    </itemList>
+  </msgBody>
+</ServiceResult>

@@ -1,0 +1,26 @@
+{
+  "busStops": [
+    {
+      "externalId": "200000123",
+      "name": "상계주공7단지",
+      "lineName": "146",
+      "kind": "bus_stop"
+    }
+  ],
+  "subwayStations": [
+    {
+      "externalId": "1004000409",
+      "name": "상계역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "2002000222",
+      "name": "강남역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    }
+  ]
+}
