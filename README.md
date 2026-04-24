@@ -78,9 +78,9 @@ npm run build
 
 ## 현재 한계
 
-- profile/stops 저장은 아직 in-memory store 기반이다.
 - 실제 공공 API 호출 대신 fixture 기반 provider parsing을 우선 연결했다.
 - 검색 인덱스는 `backend/tests/fixtures/station_index.json`의 소규모 샘플 데이터다.
+- 기본 DB는 로컬 SQLite 파일(`backend/commute_helper.db`)이라 마이그레이션/운영 DB 분리는 아직 미구현이다.
 
 ## 참고 문서
 
