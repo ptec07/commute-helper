@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from xml.etree import ElementTree as ET
 
+import httpx
+
 from app.schemas.provider_models import BusArrival
 
 
 class SeoulBusArrivalProvider:
+    endpoint = 'https://ws.bus.go.kr/api/rest/arrive/getLowArrInfoByStId'
+
     def __init__(self, service_key: str):
         self.service_key = service_key
 
@@ -14,6 +18,20 @@ class SeoulBusArrivalProvider:
         if route_id:
             params['busRouteId'] = route_id
         return params
+
+    def fetch(self, stop_id: str, route_id: str | None = None) -> list[BusArrival]:
+        try:
+            response = httpx.get(self.endpoint, params=self.build_params(stop_id, route_id), timeout=10.0)
+            response.raise_for_status()
+            if not response.text.lstrip().startswith('<'):
+                raise OSError('Seoul bus arrival API returned a non-XML payload')
+            return self.parse(response.text)
+        except httpx.HTTPError as exc:
+            raise OSError('Failed to fetch live Seoul bus arrivals') from exc
+        except ET.ParseError as exc:
+            raise OSError('Failed to parse live Seoul bus arrivals') from exc
+        except ValueError as exc:
+            raise OSError('Failed to normalize live Seoul bus arrivals') from exc
 
     def parse(self, xml_text: str) -> list[BusArrival]:
         root = ET.fromstring(xml_text)

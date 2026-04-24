@@ -32,8 +32,14 @@ uvicorn app.main:app --reload
 
 ```bash
 PUBLIC_DATA_SERVICE_KEY=your_data_go_kr_service_key
+SEOUL_OPEN_API_KEY=your_seoul_open_api_key
+USE_LIVE_PUBLIC_DATA=false
 DATABASE_URL=sqlite:///./commute_helper.db
 ```
+
+- `USE_LIVE_PUBLIC_DATA=true`이면 선택한 버스 정류장/지하철역 기준으로 실시간 API를 호출합니다.
+- 버스는 공공데이터포털 `PUBLIC_DATA_SERVICE_KEY`, 지하철은 서울 열린데이터광장 `SEOUL_OPEN_API_KEY`를 사용합니다.
+- `SEOUL_OPEN_API_KEY`가 비어 있으면 지하철도 `PUBLIC_DATA_SERVICE_KEY`를 우선 사용하도록 시도합니다.
 
 ## 프론트엔드 실행
 

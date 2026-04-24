@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     app_name: str = '출근도우미'
     database_url: str = 'sqlite:///./commute_helper.db'
     public_data_service_key: str = ''
+    seoul_open_api_key: str = ''
+    use_live_public_data: bool = False
 
 
 @lru_cache

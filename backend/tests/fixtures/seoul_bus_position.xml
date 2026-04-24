@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ServiceResult>
+  <msgHeader>
+    <headerCd>0</headerCd>
+    <headerMsg>정상서비스</headerMsg>
+  </msgHeader>
+  <msgBody>
+    <itemList>
+      <busRouteId>100000146</busRouteId>
+      <vehId>BUS-146-1</vehId>
+      <sectOrd>2</sectOrd>
+      <congetion>3</congetion>
+    </itemList>
+  </msgBody>
+</ServiceResult>
