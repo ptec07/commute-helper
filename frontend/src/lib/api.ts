@@ -18,6 +18,14 @@ export function buildDashboardUrl(profileId: string) {
   return buildApiUrl(`/api/dashboard/${profileId}`)
 }
 
+export function buildAddStopUrl(profileId: string, baseUrl = configuredApiBaseUrl) {
+  return buildApiUrl(`/api/commute-profiles/${profileId}/stops`, baseUrl)
+}
+
+export function buildSearchStopsUrl(query: string, baseUrl = configuredApiBaseUrl) {
+  return buildApiUrl(`/api/search/stops?q=${encodeURIComponent(query)}`, baseUrl)
+}
+
 export async function listProfiles() {
   const response = await fetch(buildApiUrl('/api/commute-profiles'))
   return parseJsonResponse(response)
@@ -33,7 +41,7 @@ export async function createProfile(payload: CommuteProfileInput) {
 }
 
 export async function addStop(profileId: string, payload: Record<string, unknown>) {
-  const response = await fetch(`/api/commute-profiles/${profileId}/stops`, {
+  const response = await fetch(buildAddStopUrl(profileId), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -47,6 +55,6 @@ export async function getDashboard(profileId: string): Promise<DashboardData> {
 }
 
 export async function searchStops(query: string): Promise<SearchStopsResult> {
-  const response = await fetch(`/api/search/stops?q=${encodeURIComponent(query)}`)
+  const response = await fetch(buildSearchStopsUrl(query))
   return parseJsonResponse<SearchStopsResult>(response)
 }

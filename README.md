@@ -14,6 +14,8 @@
 - 정류장/역 검색 및 선택
 - 대시보드 추천 메시지 표시
 - 서울 버스/지하철 fixture 기반 provider 파서
+- 서울 공공데이터 live provider 연동
+- public-data primary → ODsay backup → fixture fallback 순서의 live 대시보드
 - 백엔드/프론트 테스트 스위트
 
 ## 백엔드 실행
@@ -39,10 +41,11 @@ ALLOW_INSECURE_SEOUL_TRANSIT_HTTP=false
 DATABASE_URL=sqlite:///./commute_helper.db
 ```
 
-- `USE_LIVE_PUBLIC_DATA=true`이면 선택한 버스 정류장/지하철역 기준으로 ODsay API를 호출합니다.
-- `ODSAY_API_KEY`가 설정되어 있어야 live 대시보드가 동작합니다.
-- ODsay는 현재 대시보드에서 버스 정류장 노선 정보와 지하철 시간표를 사용하며, 버스 위치 정보는 제공하지 않아 빈 배열로 응답합니다.
-- 기존 `PUBLIC_DATA_SERVICE_KEY`, `SEOUL_OPEN_API_KEY`, `ALLOW_INSECURE_SEOUL_TRANSIT_HTTP`는 이전 공공 API 연동용 변수로 남아 있으며 현재 live 대시보드 경로에서는 사용하지 않습니다.
+- `USE_LIVE_PUBLIC_DATA=true`이면 선택한 버스 정류장/지하철역 기준으로 live provider를 호출합니다.
+- live provider 우선순위는 `public-data primary` → `ODsay backup` → fixture fallback입니다.
+- 서울버스 공공데이터는 일부 환경에서 HTTPS가 타임아웃될 수 있어, 로컬 진단/개발에서는 `ALLOW_INSECURE_SEOUL_TRANSIT_HTTP=true`로 HTTP fallback을 명시적으로 허용할 수 있습니다.
+- 서울버스 XML의 `headerCd=4` / `결과가 없습니다.`는 실패가 아니라 빈 결과로 처리합니다.
+- `ODSAY_API_KEY`가 설정되어 있으면 공공데이터 live 호출 실패 시 backup provider로 사용합니다.
 
 ## 프론트엔드 실행
 
@@ -87,7 +90,6 @@ npm run build
 
 ## 현재 한계
 
-- 실제 공공 API 호출 대신 fixture 기반 provider parsing을 우선 연결했다.
 - 검색 인덱스는 `backend/tests/fixtures/station_index.json`의 소규모 샘플 데이터다.
 - 기본 DB는 로컬 SQLite 파일(`backend/commute_helper.db`)이라 마이그레이션/운영 DB 분리는 아직 미구현이다.
 
