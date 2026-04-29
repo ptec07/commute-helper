@@ -38,6 +38,7 @@ PUBLIC_DATA_SERVICE_KEY=your_data_go_kr_service_key
 SEOUL_OPEN_API_KEY=your_s..._key
 USE_LIVE_PUBLIC_DATA=false
 ALLOW_INSECURE_SEOUL_TRANSIT_HTTP=false
+FRONTEND_ORIGIN=http://localhost:5173,http://127.0.0.1:5173
 DATABASE_URL=sqlite:///./commute_helper.db
 ```
 
@@ -46,6 +47,7 @@ DATABASE_URL=sqlite:///./commute_helper.db
 - 서울버스 공공데이터는 일부 환경에서 HTTPS가 타임아웃될 수 있어, 로컬 진단/개발에서는 `ALLOW_INSECURE_SEOUL_TRANSIT_HTTP=true`로 HTTP fallback을 명시적으로 허용할 수 있습니다.
 - 서울버스 XML의 `headerCd=4` / `결과가 없습니다.`는 실패가 아니라 빈 결과로 처리합니다.
 - `ODSAY_API_KEY`가 설정되어 있으면 공공데이터 live 호출 실패 시 backup provider로 사용합니다.
+- `FRONTEND_ORIGIN`은 배포 후 Vercel 도메인을 쉼표로 추가해 브라우저 CORS를 허용합니다.
 
 ## 프론트엔드 실행
 
