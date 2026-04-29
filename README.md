@@ -31,15 +31,18 @@ uvicorn app.main:app --reload
 기본 환경변수:
 
 ```bash
+ODSAY_API_KEY=your_odsay_api_key
 PUBLIC_DATA_SERVICE_KEY=your_data_go_kr_service_key
-SEOUL_OPEN_API_KEY=your_seoul_open_api_key
+SEOUL_OPEN_API_KEY=your_s..._key
 USE_LIVE_PUBLIC_DATA=false
+ALLOW_INSECURE_SEOUL_TRANSIT_HTTP=false
 DATABASE_URL=sqlite:///./commute_helper.db
 ```
 
-- `USE_LIVE_PUBLIC_DATA=true`이면 선택한 버스 정류장/지하철역 기준으로 실시간 API를 호출합니다.
-- 버스는 공공데이터포털 `PUBLIC_DATA_SERVICE_KEY`, 지하철은 서울 열린데이터광장 `SEOUL_OPEN_API_KEY`를 사용합니다.
-- `SEOUL_OPEN_API_KEY`가 비어 있으면 지하철도 `PUBLIC_DATA_SERVICE_KEY`를 우선 사용하도록 시도합니다.
+- `USE_LIVE_PUBLIC_DATA=true`이면 선택한 버스 정류장/지하철역 기준으로 ODsay API를 호출합니다.
+- `ODSAY_API_KEY`가 설정되어 있어야 live 대시보드가 동작합니다.
+- ODsay는 현재 대시보드에서 버스 정류장 노선 정보와 지하철 시간표를 사용하며, 버스 위치 정보는 제공하지 않아 빈 배열로 응답합니다.
+- 기존 `PUBLIC_DATA_SERVICE_KEY`, `SEOUL_OPEN_API_KEY`, `ALLOW_INSECURE_SEOUL_TRANSIT_HTTP`는 이전 공공 API 연동용 변수로 남아 있으며 현재 live 대시보드 경로에서는 사용하지 않습니다.
 
 ## 프론트엔드 실행
 

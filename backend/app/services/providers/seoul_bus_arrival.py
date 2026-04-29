@@ -8,10 +8,12 @@ from app.schemas.provider_models import BusArrival
 
 
 class SeoulBusArrivalProvider:
-    endpoint = 'https://ws.bus.go.kr/api/rest/arrive/getLowArrInfoByStId'
+    secure_endpoint = 'https://ws.bus.go.kr/api/rest/arrive/getLowArrInfoByStId'
+    insecure_endpoint = 'http://ws.bus.go.kr/api/rest/arrive/getLowArrInfoByStId'
 
-    def __init__(self, service_key: str):
+    def __init__(self, service_key: str, allow_insecure_http_fallback: bool = False):
         self.service_key = service_key
+        self.allow_insecure_http_fallback = allow_insecure_http_fallback
 
     def build_params(self, stop_id: str, route_id: str | None = None) -> dict[str, str]:
         params = {'serviceKey': self.service_key, 'stId': stop_id}
@@ -21,7 +23,23 @@ class SeoulBusArrivalProvider:
 
     def fetch(self, stop_id: str, route_id: str | None = None) -> list[BusArrival]:
         try:
-            response = httpx.get(self.endpoint, params=self.build_params(stop_id, route_id), timeout=10.0)
+            response = httpx.get(self.secure_endpoint, params=self.build_params(stop_id, route_id), timeout=10.0)
+            response.raise_for_status()
+            if not response.text.lstrip().startswith('<'):
+                raise OSError('Seoul bus arrival API returned a non-XML payload')
+            return self.parse(response.text)
+        except httpx.HTTPError as exc:
+            if self.allow_insecure_http_fallback:
+                return self._fetch_insecure(stop_id, route_id)
+            raise OSError('Failed to fetch live Seoul bus arrivals') from exc
+        except ET.ParseError as exc:
+            raise OSError('Failed to parse live Seoul bus arrivals') from exc
+        except ValueError as exc:
+            raise OSError('Failed to normalize live Seoul bus arrivals') from exc
+
+    def _fetch_insecure(self, stop_id: str, route_id: str | None = None) -> list[BusArrival]:
+        try:
+            response = httpx.get(self.insecure_endpoint, params=self.build_params(stop_id, route_id), timeout=10.0)
             response.raise_for_status()
             if not response.text.lstrip().startswith('<'):
                 raise OSError('Seoul bus arrival API returned a non-XML payload')
@@ -35,6 +53,7 @@ class SeoulBusArrivalProvider:
 
     def parse(self, xml_text: str) -> list[BusArrival]:
         root = ET.fromstring(xml_text)
+        self._raise_for_service_error(root)
         items = root.findall('.//itemList')
         arrivals: list[BusArrival] = []
         for item in items:
@@ -50,3 +69,12 @@ class SeoulBusArrivalProvider:
                 )
             )
         return arrivals
+
+    @staticmethod
+    def _raise_for_service_error(root: ET.Element) -> None:
+        header_code = (root.findtext('.//headerCd') or '').strip()
+        if header_code == '4':
+            return
+        if header_code and header_code != '0':
+            message = (root.findtext('.//headerMsg') or 'Failed to fetch live Seoul bus arrivals').strip()
+            raise OSError(message)
