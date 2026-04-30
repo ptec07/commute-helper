@@ -8,17 +8,27 @@ type ProfileFormProps = {
 
 export function ProfileForm({ onSubmit }: ProfileFormProps) {
   const [name, setName] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    await onSubmit({
-      name,
-      origin_label: '집',
-      destination_label: '회사',
-      target_arrival_time: '09:00:00',
-      preferred_mode: 'balanced',
-      walking_tolerance_min: 10,
-    })
+    if (isSubmitting) {
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      await onSubmit({
+        name: name.trim(),
+        origin_label: '집',
+        destination_label: '회사',
+        target_arrival_time: '09:00:00',
+        preferred_mode: 'balanced',
+        walking_tolerance_min: 10,
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -30,9 +40,12 @@ export function ProfileForm({ onSubmit }: ProfileFormProps) {
           value={name}
           placeholder='평일 출근'
           onChange={(e) => setName(e.target.value)}
+          disabled={isSubmitting}
         />
       </label>
-      <Button type='submit'>다음</Button>
+      <Button type='submit' disabled={isSubmitting || name.trim().length === 0}>
+        {isSubmitting ? '저장 중...' : '다음'}
+      </Button>
     </form>
   )
 }
