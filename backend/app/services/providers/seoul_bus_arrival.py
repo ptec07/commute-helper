@@ -11,9 +11,10 @@ class SeoulBusArrivalProvider:
     secure_endpoint = 'https://ws.bus.go.kr/api/rest/arrive/getLowArrInfoByStId'
     insecure_endpoint = 'http://ws.bus.go.kr/api/rest/arrive/getLowArrInfoByStId'
 
-    def __init__(self, service_key: str, allow_insecure_http_fallback: bool = False):
+    def __init__(self, service_key: str, allow_insecure_http_fallback: bool = False, request_timeout: float = 3.0):
         self.service_key = service_key
         self.allow_insecure_http_fallback = allow_insecure_http_fallback
+        self.request_timeout = request_timeout
 
     def build_params(self, stop_id: str, route_id: str | None = None) -> dict[str, str]:
         params = {'serviceKey': self.service_key, 'stId': stop_id}
@@ -23,7 +24,7 @@ class SeoulBusArrivalProvider:
 
     def fetch(self, stop_id: str, route_id: str | None = None) -> list[BusArrival]:
         try:
-            response = httpx.get(self.secure_endpoint, params=self.build_params(stop_id, route_id), timeout=10.0)
+            response = httpx.get(self.secure_endpoint, params=self.build_params(stop_id, route_id), timeout=self.request_timeout)
             response.raise_for_status()
             if not response.text.lstrip().startswith('<'):
                 raise OSError('Seoul bus arrival API returned a non-XML payload')
@@ -39,7 +40,7 @@ class SeoulBusArrivalProvider:
 
     def _fetch_insecure(self, stop_id: str, route_id: str | None = None) -> list[BusArrival]:
         try:
-            response = httpx.get(self.insecure_endpoint, params=self.build_params(stop_id, route_id), timeout=10.0)
+            response = httpx.get(self.insecure_endpoint, params=self.build_params(stop_id, route_id), timeout=self.request_timeout)
             response.raise_for_status()
             if not response.text.lstrip().startswith('<'):
                 raise OSError('Seoul bus arrival API returned a non-XML payload')

@@ -12,9 +12,10 @@ class SeoulSubwayArrivalProvider:
     secure_endpoint_template = 'https://swopenAPI.seoul.go.kr/api/subway/{service_key}/xml/realtimeStationArrival/0/5/{station_name}'
     insecure_endpoint_template = 'http://swopenAPI.seoul.go.kr/api/subway/{service_key}/xml/realtimeStationArrival/0/5/{station_name}'
 
-    def __init__(self, service_key: str, allow_insecure_http_fallback: bool = False):
+    def __init__(self, service_key: str, allow_insecure_http_fallback: bool = False, request_timeout: float = 3.0):
         self.service_key = service_key
         self.allow_insecure_http_fallback = allow_insecure_http_fallback
+        self.request_timeout = request_timeout
 
     def normalize_station_name(self, station_name: str) -> str:
         normalized = station_name.strip()
@@ -33,7 +34,7 @@ class SeoulSubwayArrivalProvider:
 
     def fetch(self, station_name: str) -> list[SubwayArrival]:
         try:
-            response = httpx.get(self.build_url(station_name), timeout=10.0)
+            response = httpx.get(self.build_url(station_name), timeout=self.request_timeout)
             response.raise_for_status()
             if not response.text.lstrip().startswith('<'):
                 raise OSError('Seoul subway API returned a non-XML payload')
@@ -49,7 +50,7 @@ class SeoulSubwayArrivalProvider:
 
     def _fetch_insecure(self, station_name: str) -> list[SubwayArrival]:
         try:
-            response = httpx.get(self.build_url(station_name, insecure=True), timeout=10.0)
+            response = httpx.get(self.build_url(station_name, insecure=True), timeout=self.request_timeout)
             response.raise_for_status()
             if not response.text.lstrip().startswith('<'):
                 raise OSError('Seoul subway API returned a non-XML payload')

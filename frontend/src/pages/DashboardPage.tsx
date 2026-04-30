@@ -49,7 +49,10 @@ export function DashboardPage({ profileId, getDashboard = defaultGetDashboard }:
   if (!data) {
     return (
       <AppShell>
-        <p className='loading'>불러오는 중...</p>
+        <div className='status-card' role='status' aria-live='polite'>
+          <p className='loading'>도착 정보를 불러오고 있어요</p>
+          <p className='muted'>실시간 정보를 확인하는 중입니다.</p>
+        </div>
       </AppShell>
     )
   }

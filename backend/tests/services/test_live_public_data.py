@@ -42,6 +42,7 @@ def test_bus_arrival_provider_fetches_live_xml(monkeypatch):
     assert captured['url'] == 'https://ws.bus.go.kr/api/rest/arrive/getLowArrInfoByStId'
     assert captured['params']['serviceKey'] == 'live-key'
     assert captured['params']['stId'] == '200000123'
+    assert captured['timeout'] <= 3.0
     assert arrivals[0].route_name == '146'
 
 
@@ -246,6 +247,7 @@ def test_subway_arrival_provider_fetches_live_xml(monkeypatch):
 
     def fake_get(url: str, *, timeout: float):
         captured['url'] = url
+        captured['timeout'] = timeout
         return DummyResponse(xml_text)
 
     monkeypatch.setattr(httpx, 'get', fake_get)
@@ -258,6 +260,7 @@ def test_subway_arrival_provider_fetches_live_xml(monkeypatch):
     )
     assert '%EC%83%81%EA%B3%84' in captured['url']
     assert '%EC%97%AD' not in captured['url']
+    assert captured['timeout'] <= 3.0
     assert arrivals[0].station_name == '상계역'
 
 

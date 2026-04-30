@@ -196,7 +196,21 @@ button:disabled { cursor: not-allowed; opacity: 0.55; }
 .muted { color: var(--text-subtle); }
 .tiny { color: var(--text-muted); font-size: 0.82rem; font-weight: 700; }
 .error { color: #b42318; background: #fef3f2; border: 1px solid #fecdca; border-radius: 14px; padding: 12px 14px; }
-.loading { min-height: 55vh; display: grid; place-items: center; color: var(--text-subtle); font-weight: 800; }
+.status-card {
+  min-height: 48vh;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.loading { margin: 0; color: var(--text-main); font-weight: 900; letter-spacing: -0.03em; }
+.success-note { margin: 0 0 12px; color: var(--green); font-size: 0.9rem; font-weight: 900; }
 
 .result-list,
 .arrival-list,

@@ -19,16 +19,17 @@ class SeoulBusPositionProvider:
     secure_endpoint = 'https://ws.bus.go.kr/api/rest/buspos/getLowBusPosByRtid'
     insecure_endpoint = 'http://ws.bus.go.kr/api/rest/buspos/getLowBusPosByRtid'
 
-    def __init__(self, service_key: str, allow_insecure_http_fallback: bool = False):
+    def __init__(self, service_key: str, allow_insecure_http_fallback: bool = False, request_timeout: float = 3.0):
         self.service_key = service_key
         self.allow_insecure_http_fallback = allow_insecure_http_fallback
+        self.request_timeout = request_timeout
 
     def build_params(self, route_id: str) -> dict[str, str]:
         return {'serviceKey': self.service_key, 'busRouteId': route_id}
 
     def fetch(self, route_id: str) -> list[BusPosition]:
         try:
-            response = httpx.get(self.secure_endpoint, params=self.build_params(route_id), timeout=10.0)
+            response = httpx.get(self.secure_endpoint, params=self.build_params(route_id), timeout=self.request_timeout)
             response.raise_for_status()
             return self.parse(response.text)
         except httpx.HTTPError as exc:
@@ -40,7 +41,7 @@ class SeoulBusPositionProvider:
 
     def _fetch_insecure(self, route_id: str) -> list[BusPosition]:
         try:
-            response = httpx.get(self.insecure_endpoint, params=self.build_params(route_id), timeout=10.0)
+            response = httpx.get(self.insecure_endpoint, params=self.build_params(route_id), timeout=self.request_timeout)
             response.raise_for_status()
             return self.parse(response.text)
         except httpx.HTTPError as exc:

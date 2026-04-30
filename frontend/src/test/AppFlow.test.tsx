@@ -51,6 +51,7 @@ describe('app flow', () => {
       }
 
       if (url === '/api/dashboard/profile-1') {
+        await new Promise((resolve) => setTimeout(resolve, 50))
         return {
           ok: true,
           status: 200,
@@ -92,7 +93,10 @@ describe('app flow', () => {
     expect(await screen.findByLabelText('정류장 또는 역 검색')).toBeInTheDocument()
     await user.type(screen.getByLabelText('정류장 또는 역 검색'), '상계역')
     await user.click(await screen.findByRole('button', { name: '상계역' }))
+    expect(await screen.findByText('선택 완료')).toBeInTheDocument()
+    expect(screen.getAllByText('상계역').length).toBeGreaterThanOrEqual(1)
     await user.click(screen.getByRole('button', { name: '대시보드 보기' }))
+    expect(await screen.findByText('도착 정보를 불러오고 있어요')).toBeInTheDocument()
 
     await waitFor(() => {
       expect(screen.getByText('지금 출발하면 버스가 더 유리합니다.')).toBeInTheDocument()
