@@ -8,6 +8,12 @@
 - `frontend/`: React + Vite 프론트엔드
 - `docs/`: 설계 문서와 구현 계획
 
+## 배포 URL
+
+- Frontend: https://commute-helper.vercel.app
+- Backend: https://commute-helper-backend.onrender.com
+- Health: https://commute-helper-backend.onrender.com/health
+
 ## 현재 구현 범위
 
 - 통근 프로필 생성
@@ -94,6 +100,7 @@ npm run build
 
 - 검색 인덱스는 `backend/tests/fixtures/station_index.json`의 소규모 샘플 데이터다.
 - 기본 DB는 로컬 SQLite 파일(`backend/commute_helper.db`)이라 마이그레이션/운영 DB 분리는 아직 미구현이다.
+- 운영 배포에서 데이터를 유지하려면 Render PostgreSQL 같은 영구 DB의 URL을 `DATABASE_URL`에 설정한다. 유료 리소스 생성이 필요할 수 있으므로 현재 배포는 SQLite 기반 MVP 데모로 둔다.
 
 ## 참고 문서
 
