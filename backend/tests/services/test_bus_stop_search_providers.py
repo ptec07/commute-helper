@@ -76,6 +76,39 @@ def test_gyeonggi_bus_stop_search_fetches_and_normalizes_xml(monkeypatch):
     assert calls[0][1]['keyword'] == '판교역'
 
 
+def test_gyeonggi_bus_stop_search_falls_back_to_legacy_gbis_endpoint(monkeypatch):
+    calls = []
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+    <response><msgHeader><resultCode>0</resultCode></msgHeader><msgBody>
+      <busStationList><stationId>277102443</stationId><stationName>판교역동편</stationName></busStationList>
+    </msgBody></response>'''
+
+    def fake_get(url, params, timeout):
+        calls.append((url, params, timeout))
+        if url == 'https://apis.data.go.kr/6410000/busstationservice/v2/getBusStationListv2':
+            return FakeResponse('Forbidden', status_code=403)
+        return FakeResponse(xml)
+
+    monkeypatch.setattr(httpx, 'get', fake_get)
+
+    provider = GyeonggiBusStopSearchProvider(service_key='secret')
+    result = provider.fetch('판교역')
+
+    assert result == [
+        {
+            'externalId': '277102443',
+            'name': '판교역동편',
+            'lineName': '경기버스정류장',
+            'kind': 'bus_stop',
+            'direction': '',
+        }
+    ]
+    assert calls[0][0] == 'https://apis.data.go.kr/6410000/busstationservice/v2/getBusStationListv2'
+    assert calls[1][0] == 'http://openapi.gbis.go.kr/ws/rest/busstationservice'
+    assert calls[1][1]['serviceKey'] == 'secret'
+    assert calls[1][1]['keyword'] == '판교역'
+
+
 def test_bus_stop_search_provider_raises_oserror_for_auth_failure(monkeypatch):
     xml = '''<?xml version="1.0" encoding="UTF-8"?>
     <ServiceResult><msgHeader><headerCd>7</headerCd><headerMsg>Key인증실패</headerMsg></msgHeader></ServiceResult>'''

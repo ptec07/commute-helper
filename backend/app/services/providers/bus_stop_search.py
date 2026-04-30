@@ -60,6 +60,7 @@ class SeoulBusStopSearchProvider:
 
 class GyeonggiBusStopSearchProvider:
     endpoint = 'https://apis.data.go.kr/6410000/busstationservice/v2/getBusStationListv2'
+    legacy_gbis_endpoint = 'http://openapi.gbis.go.kr/ws/rest/busstationservice'
 
     def __init__(self, service_key: str, request_timeout: float = 3.0):
         self.service_key = service_key
@@ -68,19 +69,24 @@ class GyeonggiBusStopSearchProvider:
     def fetch(self, query: str) -> list[dict[str, str]]:
         if not self.service_key:
             raise OSError('Gyeonggi bus stop search key is not configured')
-        try:
-            response = httpx.get(
-                self.endpoint,
-                params={
-                    'serviceKey': self.service_key,
-                    'keyword': query,
-                },
-                timeout=self.request_timeout,
-            )
-            response.raise_for_status()
-        except httpx.HTTPError as exc:
-            raise OSError('Gyeonggi bus stop search request failed') from exc
-        return self.parse(response.text)
+
+        last_error: Exception | None = None
+        for endpoint in [self.endpoint, self.legacy_gbis_endpoint]:
+            try:
+                response = httpx.get(
+                    endpoint,
+                    params={
+                        'serviceKey': self.service_key,
+                        'keyword': query,
+                    },
+                    timeout=self.request_timeout,
+                )
+                response.raise_for_status()
+                return self.parse(response.text)
+            except (httpx.HTTPError, OSError) as exc:
+                last_error = exc
+                continue
+        raise OSError('Gyeonggi bus stop search request failed') from last_error
 
     def parse(self, payload: str) -> list[dict[str, str]]:
         try:
