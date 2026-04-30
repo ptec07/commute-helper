@@ -1,9 +1,17 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def disable_live_bus_stop_search(monkeypatch):
+    from app.services import search_service
+
+    monkeypatch.setattr(search_service, '_search_live_bus_stops', lambda query: [])
 
 
 def test_search_returns_matching_subway_station():
@@ -20,6 +28,38 @@ def test_search_returns_common_station_beyond_initial_demo_fixture():
     assert response.status_code == 200
     payload = response.json()
     assert any(station['name'] == '사당역' for station in payload['subwayStations'])
+
+
+def test_search_includes_live_seoul_and_gyeonggi_bus_stops(monkeypatch):
+    from app.services import search_service
+
+    monkeypatch.setattr(
+        search_service,
+        '_search_live_bus_stops',
+        lambda query: [
+            {
+                'externalId': '122000606',
+                'name': '강남역',
+                'lineName': '서울버스정류장 23813',
+                'kind': 'bus_stop',
+                'direction': '',
+            },
+            {
+                'externalId': '277102443',
+                'name': '판교역동편',
+                'lineName': '경기버스정류장',
+                'kind': 'bus_stop',
+                'direction': '',
+            },
+        ],
+    )
+
+    response = client.get('/api/search/stops?q=판교역')
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert any(stop['name'] == '강남역' for stop in payload['busStops'])
+    assert any(stop['name'] == '판교역동편' for stop in payload['busStops'])
 
 
 def test_search_includes_representative_metropolitan_stations():

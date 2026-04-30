@@ -4,6 +4,13 @@ import json
 from pathlib import Path
 from typing import Any
 
+from app.core.settings import get_settings
+from app.services.providers.bus_stop_search import (
+    GyeonggiBusStopSearchProvider,
+    SeoulBusStopSearchProvider,
+    deduplicate_stops,
+)
+
 SEARCH_INDEX_PATH = Path(__file__).resolve().parents[1] / 'data' / 'transit_search_index.json'
 # Backward-compatible alias for existing tests/monkeypatches.
 FIXTURE_PATH = SEARCH_INDEX_PATH
@@ -58,6 +65,27 @@ def _matching_items(items: list[dict[str, Any]], query: str) -> list[dict[str, s
     return [_public_item(item) for score, index, item in sorted(matches, key=lambda row: (row[0], row[1]))]
 
 
+def _search_live_bus_stops(query: str) -> list[dict[str, str]]:
+    settings = get_settings()
+    if not getattr(settings, 'use_live_public_data', False):
+        return []
+
+    public_data_key = getattr(settings, 'public_data_service_key', '')
+    gyeonggi_key = getattr(settings, 'gyeonggi_bus_service_key', '') or public_data_key
+    providers = [
+        SeoulBusStopSearchProvider(service_key=public_data_key),
+        GyeonggiBusStopSearchProvider(service_key=gyeonggi_key),
+    ]
+
+    results: list[dict[str, str]] = []
+    for provider in providers:
+        try:
+            results.extend(provider.fetch(query))
+        except OSError:
+            continue
+    return deduplicate_stops(results)
+
+
 def search_stops(query: str) -> dict[str, list[dict[str, str]]]:
     try:
         data = json.loads(SEARCH_INDEX_PATH.read_text(encoding='utf-8'))
@@ -68,7 +96,9 @@ def search_stops(query: str) -> dict[str, list[dict[str, str]]]:
     if not query:
         return {'busStops': [], 'subwayStations': []}
 
+    static_bus_stops = _matching_items(data.get('busStops', []), query)
+    live_bus_stops = _search_live_bus_stops(query)
     return {
-        'busStops': _matching_items(data.get('busStops', []), query),
+        'busStops': deduplicate_stops(static_bus_stops + live_bus_stops),
         'subwayStations': _matching_items(data.get('subwayStations', []), query),
     }
