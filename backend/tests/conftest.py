@@ -21,4 +21,10 @@ def isolate_test_settings(monkeypatch):
 def reset_database():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+    try:
+        from app.services.dashboard_service import clear_live_arrival_cache
+
+        clear_live_arrival_cache()
+    except Exception:
+        pass
     yield

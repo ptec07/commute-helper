@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
+import threading
+import time
 
 from app.core.settings import get_settings
 from app.schemas.dashboard import DashboardResponse
@@ -14,6 +17,51 @@ from app.services.providers.seoul_subway_arrival import SeoulSubwayArrivalProvid
 from app.services.recommendation_service import recommend_mode
 
 FIXTURES = Path(__file__).resolve().parents[2] / 'tests' / 'fixtures'
+LIVE_ARRIVAL_CACHE_TTL_SECONDS = 30
+_live_arrival_cache: dict[tuple[str, str], tuple[float, list]] = {}
+_live_arrival_cache_lock = threading.Lock()
+
+
+def clear_live_arrival_cache():
+    with _live_arrival_cache_lock:
+        _live_arrival_cache.clear()
+
+
+def _cached_fetch(kind: str, key: str, fetcher):
+    cache_key = (kind, key)
+    now = time.time()
+    with _live_arrival_cache_lock:
+        cached = _live_arrival_cache.get(cache_key)
+        if cached and now - cached[0] <= LIVE_ARRIVAL_CACHE_TTL_SECONDS:
+            return list(cached[1])
+
+    value = list(fetcher())
+    with _live_arrival_cache_lock:
+        _live_arrival_cache[cache_key] = (time.time(), list(value))
+    return value
+
+
+def _fetch_many(fetch_jobs: list[tuple[str, str, object]]):
+    if not fetch_jobs:
+        return []
+    if len(fetch_jobs) == 1:
+        kind, key, fetcher = fetch_jobs[0]
+        return _cached_fetch(kind, key, fetcher)
+
+    results_by_index: dict[int, list] = {}
+    max_workers = min(4, len(fetch_jobs))
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = {
+            executor.submit(_cached_fetch, kind, key, fetcher): index
+            for index, (kind, key, fetcher) in enumerate(fetch_jobs)
+        }
+        for future in as_completed(futures):
+            results_by_index[futures[future]] = future.result()
+
+    results = []
+    for index in range(len(fetch_jobs)):
+        results.extend(results_by_index.get(index, []))
+    return results
 
 
 def _load_fixture_dashboard_data(profile):
@@ -52,14 +100,10 @@ def _load_public_data_dashboard_data(profile):
     bus_stops = [stop for stop in profile.stops if stop.type == 'bus_stop']
     subway_stops = [stop for stop in profile.stops if stop.type == 'subway_station']
 
-    bus: list = []
-    for stop in bus_stops:
-        bus.extend(bus_provider.fetch(stop.external_id))
+    bus = _fetch_many([('bus', stop.external_id, lambda stop=stop: bus_provider.fetch(stop.external_id)) for stop in bus_stops])
     bus_positions: list = []
 
-    subway: list = []
-    for stop in subway_stops:
-        subway.extend(subway_provider.fetch(stop.name))
+    subway = _fetch_many([('subway', stop.name, lambda stop=stop: subway_provider.fetch(stop.name)) for stop in subway_stops])
 
     return _filter_dashboard_data(profile, bus, bus_positions, subway)
 
@@ -76,14 +120,10 @@ def _load_odsay_dashboard_data(profile):
     bus_stops = [stop for stop in profile.stops if stop.type == 'bus_stop']
     subway_stops = [stop for stop in profile.stops if stop.type == 'subway_station']
 
-    bus: list = []
-    for stop in bus_stops:
-        bus.extend(bus_provider.fetch(stop.name, stop.external_id))
+    bus = _fetch_many([('odsay-bus', stop.name, lambda stop=stop: bus_provider.fetch(stop.name, stop.external_id)) for stop in bus_stops])
     bus_positions: list = []
 
-    subway: list = []
-    for stop in subway_stops:
-        subway.extend(subway_provider.fetch(stop.name, stop.line_name))
+    subway = _fetch_many([('odsay-subway', stop.name, lambda stop=stop: subway_provider.fetch(stop.name, stop.line_name)) for stop in subway_stops])
 
     return _filter_dashboard_data(profile, bus, bus_positions, subway)
 
