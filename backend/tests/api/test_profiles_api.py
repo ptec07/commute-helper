@@ -23,6 +23,19 @@ def test_create_profile_returns_created_profile():
     assert response.json()['name'] == '회사 가기'
 
 
+def test_create_profile_accepts_name_only_for_legacy_clients():
+    response = client.post('/api/commute-profiles', json={'name': '구버전 프론트'})
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body['name'] == '구버전 프론트'
+    assert body['origin_label'] == '집'
+    assert body['destination_label'] == '회사'
+    assert body['target_arrival_time'] == '09:00:00'
+    assert body['preferred_mode'] == 'balanced'
+    assert body['walking_tolerance_min'] == 10
+
+
 def test_list_profiles_returns_created_profile():
     response = client.get('/api/commute-profiles')
 

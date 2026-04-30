@@ -21,9 +21,9 @@ class CommuteStopRead(CommuteStopBase):
 
 class CommuteProfileCreate(BaseModel):
     name: str
-    origin_label: str
-    destination_label: str
-    target_arrival_time: time
+    origin_label: str = '집'
+    destination_label: str = '회사'
+    target_arrival_time: time = time(9, 0)
     preferred_mode: str = 'balanced'
     walking_tolerance_min: int = 10
 
