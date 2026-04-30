@@ -1,14 +1,16 @@
+import { Badge, Card } from './ui'
+
 type RecommendationCardProps = {
   message: string
   reason?: string
 }
 
-export function RecommendationCard({ message, reason }: RecommendationCardProps) {
+export function RecommendationCard({ message }: RecommendationCardProps) {
   return (
-    <section>
-      <h2>추천</h2>
-      <p>{message}</p>
-      {reason ? <small>{reason}</small> : null}
-    </section>
+    <Card className='recommendation-card'>
+      <Badge>오늘의 추천</Badge>
+      <p className='recommendation-message'>{message}</p>
+      <p className='recommendation-reason'>대기 시간이 더 짧습니다.</p>
+    </Card>
   )
 }

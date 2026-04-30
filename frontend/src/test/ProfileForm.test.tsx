@@ -9,7 +9,7 @@ test('submits commute profile values', async () => {
   render(<ProfileForm onSubmit={onSubmit} />)
 
   await user.type(screen.getByLabelText('프로필 이름'), '회사 가기')
-  await user.click(screen.getByRole('button', { name: '저장' }))
+  await user.click(screen.getByRole('button', { name: '다음' }))
 
   expect(onSubmit).toHaveBeenCalled()
 })

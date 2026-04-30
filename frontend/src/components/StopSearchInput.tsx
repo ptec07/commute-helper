@@ -33,29 +33,50 @@ export function StopSearchInput({ searchStops, onSelect }: StopSearchInputProps)
     }
   }
 
+  const hasResults = results.busStops.length > 0 || results.subwayStations.length > 0
+
   return (
-    <div>
-      <label>
+    <section className='card stack'>
+      <label className='field'>
         정류장 또는 역 검색
-        <input onChange={handleChange} />
+        <input className='input' placeholder='상계역 검색' onChange={handleChange} />
       </label>
-      {error ? <p>{error}</p> : null}
-      <ul>
-        {results.busStops.map((item) => (
-          <li key={item.externalId}>
-            <button type="button" onClick={() => onSelect(item)}>
-              {item.name}
-            </button>
-          </li>
-        ))}
-        {results.subwayStations.map((item) => (
-          <li key={item.externalId}>
-            <button type="button" onClick={() => onSelect(item)}>
-              {item.name}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
+      {error ? <p className='error'>{error}</p> : null}
+      {hasResults ? (
+        <div className='stack'>
+          {results.subwayStations.length > 0 ? (
+            <div>
+              <h2 className='section-title'>지하철역</h2>
+              <ul className='result-list'>
+                {results.subwayStations.map((item) => (
+                  <li key={item.externalId}>
+                    <button className='result-button' type='button' aria-label={item.name} onClick={() => onSelect(item)}>
+                      <span>{item.name}</span>
+                      <span className='result-meta'>{item.lineName ?? '지하철'}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          {results.busStops.length > 0 ? (
+            <div>
+              <h2 className='section-title'>버스 정류장</h2>
+              <ul className='result-list'>
+                {results.busStops.map((item) => (
+                  <li key={item.externalId}>
+                    <button className='result-button' type='button' aria-label={item.name} onClick={() => onSelect(item)}>
+                      <span>{item.name}</span>
+                      <span className='result-meta'>{item.lineName ?? '버스'}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
   )
 }

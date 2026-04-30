@@ -3,15 +3,21 @@ type SelectedStopsListProps = {
 }
 
 export function SelectedStopsList({ items }: SelectedStopsListProps) {
-  if (items.length === 0) {
-    return <p>선택된 정류장/역이 없습니다.</p>
-  }
-
   return (
-    <ul>
-      {items.map((item) => (
-        <li key={item.externalId}>{item.name}</li>
-      ))}
-    </ul>
+    <section className='card'>
+      <h2 className='section-title'>선택한 곳</h2>
+      {items.length === 0 ? (
+        <p className='empty-state'>아직 선택한 곳이 없어요</p>
+      ) : (
+        <ul className='selected-list'>
+          {items.map((item) => (
+            <li className='chip' key={item.externalId}>
+              {item.name}
+              {item.lineName ? <span className='tiny'>{item.lineName}</span> : null}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   )
 }

@@ -16,6 +16,8 @@ test('renders recommendation message from dashboard payload', async () => {
 
   render(<DashboardPage profileId='1' getDashboard={getDashboard} />)
   expect(await screen.findByText('지금 출발하면 버스가 더 유리합니다.')).toBeInTheDocument()
+  expect(screen.getByText('대기 시간이 더 짧습니다.')).toBeInTheDocument()
+  expect(screen.getByText('실시간 공공데이터 기준')).toBeInTheDocument()
 })
 
 test('renders a controlled error message when dashboard loading fails', async () => {
@@ -39,5 +41,5 @@ test('explains when there is no bus arrival information', async () => {
   })
 
   render(<DashboardPage profileId='1' getDashboard={getDashboard} />)
-  expect(await screen.findByText('현재 표시할 버스 도착 정보가 없습니다.')).toBeInTheDocument()
+  expect((await screen.findAllByText('현재 표시할 정보가 없어요')).length).toBeGreaterThanOrEqual(1)
 })

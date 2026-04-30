@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { CommuteProfileInput } from '../lib/types'
+import { Button } from './ui'
 
 type ProfileFormProps = {
   onSubmit: (payload: CommuteProfileInput) => void | Promise<void>
@@ -21,12 +22,17 @@ export function ProfileForm({ onSubmit }: ProfileFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
+    <form className='form' onSubmit={handleSubmit}>
+      <label className='field'>
         프로필 이름
-        <input value={name} onChange={(e) => setName(e.target.value)} />
+        <input
+          className='input'
+          value={name}
+          placeholder='평일 출근'
+          onChange={(e) => setName(e.target.value)}
+        />
       </label>
-      <button type="submit">저장</button>
+      <Button type='submit'>다음</Button>
     </form>
   )
 }

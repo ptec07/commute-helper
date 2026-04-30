@@ -83,16 +83,16 @@ describe('app flow', () => {
     render(<App />)
 
     expect(screen.getByText('출근도우미')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: '통근 프로필 만들기' }))
+    await user.click(screen.getByRole('button', { name: '내 출근길 설정하기' }))
     expect(await screen.findByLabelText('프로필 이름')).toBeInTheDocument()
 
     await user.type(screen.getByLabelText('프로필 이름'), '회사 가기')
-    await user.click(screen.getByRole('button', { name: '저장' }))
+    await user.click(screen.getByRole('button', { name: '다음' }))
 
     expect(await screen.findByLabelText('정류장 또는 역 검색')).toBeInTheDocument()
     await user.type(screen.getByLabelText('정류장 또는 역 검색'), '상계역')
     await user.click(await screen.findByRole('button', { name: '상계역' }))
-    await user.click(screen.getByRole('button', { name: '선택 완료' }))
+    await user.click(screen.getByRole('button', { name: '대시보드 보기' }))
 
     await waitFor(() => {
       expect(screen.getByText('지금 출발하면 버스가 더 유리합니다.')).toBeInTheDocument()
