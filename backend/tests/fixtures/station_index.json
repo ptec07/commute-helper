@@ -21,6 +21,195 @@
       "lineName": "2호선",
       "kind": "subway_station",
       "direction": "내선순환"
+    },
+    {
+      "externalId": "1004000426",
+      "name": "서울역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000433",
+      "name": "사당역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000411",
+      "name": "노원역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000412",
+      "name": "창동역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000414",
+      "name": "수유역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000417",
+      "name": "혜화역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000421",
+      "name": "충무로역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000424",
+      "name": "명동역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000425",
+      "name": "회현역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000427",
+      "name": "숙대입구역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000428",
+      "name": "삼각지역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000429",
+      "name": "신용산역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000430",
+      "name": "이촌역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000431",
+      "name": "동작역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1004000432",
+      "name": "이수역",
+      "lineName": "4호선",
+      "kind": "subway_station",
+      "direction": "오이도방향"
+    },
+    {
+      "externalId": "1002000201",
+      "name": "시청역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000202",
+      "name": "을지로입구역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000205",
+      "name": "동대문역사문화공원역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000216",
+      "name": "잠실역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000219",
+      "name": "삼성역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000220",
+      "name": "선릉역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000221",
+      "name": "역삼역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000223",
+      "name": "교대역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000224",
+      "name": "서초역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000239",
+      "name": "홍대입구역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000240",
+      "name": "신촌역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
+    },
+    {
+      "externalId": "1002000242",
+      "name": "아현역",
+      "lineName": "2호선",
+      "kind": "subway_station",
+      "direction": "내선순환"
     }
   ]
 }

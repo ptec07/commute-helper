@@ -35,11 +35,25 @@ export function StopSearchInput({ searchStops, onSelect }: StopSearchInputProps)
 
   const hasResults = results.busStops.length > 0 || results.subwayStations.length > 0
 
+  function selectFirstResult() {
+    const firstResult = results.subwayStations[0] ?? results.busStops[0]
+    if (firstResult) {
+      onSelect(firstResult)
+    }
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      selectFirstResult()
+    }
+  }
+
   return (
     <section className='card stack'>
       <label className='field'>
         정류장 또는 역 검색
-        <input className='input' placeholder='상계역 검색' onChange={handleChange} />
+        <input className='input' placeholder='상계역 검색' onChange={handleChange} onKeyDown={handleKeyDown} />
       </label>
       {error ? <p className='error'>{error}</p> : null}
       {hasResults ? (
