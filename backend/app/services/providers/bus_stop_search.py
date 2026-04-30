@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import xml.etree.ElementTree as ET
 from typing import Any
 
@@ -86,6 +87,9 @@ class GyeonggiBusStopSearchProvider:
             return self.parse(response.text)
         except (httpx.HTTPError, OSError) as exc:
             station_error = exc
+
+        if not _looks_like_route_query(query):
+            raise OSError('Gyeonggi route fallback only supports route-like queries') from station_error
 
         try:
             route_stations = self._fetch_route_station_fallback(query)
@@ -196,6 +200,13 @@ class GyeonggiBusStopSearchProvider:
                 }
             )
         return stops
+
+
+def _looks_like_route_query(query: str) -> bool:
+    normalized = query.strip().casefold().replace(' ', '')
+    if not normalized:
+        return False
+    return bool(re.fullmatch(r'(?:[a-z가-힣]{0,3}\d{1,4}[a-z가-힣]{0,3}|[a-z]\d{1,4})', normalized))
 
 
 def _first_text(item: ET.Element, names: list[str]) -> str:

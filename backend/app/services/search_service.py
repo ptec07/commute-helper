@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import time
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,12 @@ from app.services.providers.bus_stop_search import (
 SEARCH_INDEX_PATH = Path(__file__).resolve().parents[1] / 'data' / 'transit_search_index.json'
 # Backward-compatible alias for existing tests/monkeypatches.
 FIXTURE_PATH = SEARCH_INDEX_PATH
+LIVE_BUS_STOP_CACHE_TTL_SECONDS = 300
+_live_bus_stop_search_cache: dict[str, tuple[float, list[dict[str, str]]]] = {}
+
+
+def clear_live_bus_stop_search_cache() -> None:
+    _live_bus_stop_search_cache.clear()
 
 
 def _normalize_query(value: str) -> str:
@@ -66,6 +73,12 @@ def _matching_items(items: list[dict[str, Any]], query: str) -> list[dict[str, s
 
 
 def _search_live_bus_stops(query: str) -> list[dict[str, str]]:
+    normalized_query = _normalize_query(query)
+    cached = _live_bus_stop_search_cache.get(normalized_query)
+    now = time.monotonic()
+    if cached and now - cached[0] < LIVE_BUS_STOP_CACHE_TTL_SECONDS:
+        return cached[1]
+
     settings = get_settings()
     if not getattr(settings, 'use_live_public_data', False):
         return []
@@ -83,7 +96,9 @@ def _search_live_bus_stops(query: str) -> list[dict[str, str]]:
             results.extend(provider.fetch(query))
         except OSError:
             continue
-    return deduplicate_stops(results)
+    unique_results = deduplicate_stops(results)
+    _live_bus_stop_search_cache[normalized_query] = (now, unique_results)
+    return unique_results
 
 
 def search_stops(query: str) -> dict[str, list[dict[str, str]]]:

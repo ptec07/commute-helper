@@ -55,11 +55,7 @@ def _load_public_data_dashboard_data(profile):
     bus: list = []
     for stop in bus_stops:
         bus.extend(bus_provider.fetch(stop.external_id))
-    route_ids = sorted({item.route_id for item in bus if item.route_id})
-
     bus_positions: list = []
-    for route_id in route_ids:
-        bus_positions.extend(position_provider.fetch(route_id))
 
     subway: list = []
     for stop in subway_stops:
@@ -83,11 +79,7 @@ def _load_odsay_dashboard_data(profile):
     bus: list = []
     for stop in bus_stops:
         bus.extend(bus_provider.fetch(stop.name, stop.external_id))
-    route_ids = sorted({item.route_id for item in bus if item.route_id})
-
     bus_positions: list = []
-    for route_id in route_ids:
-        bus_positions.extend(position_provider.fetch(route_id))
 
     subway: list = []
     for stop in subway_stops:

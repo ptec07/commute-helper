@@ -416,7 +416,7 @@ def test_dashboard_uses_public_data_before_odsay_backup(monkeypatch):
     dashboard = build_dashboard(profile)
 
     assert dashboard.bus
-    assert dashboard.bus_positions
+    assert dashboard.bus_positions == []
     assert dashboard.subway
     assert dashboard.profile.stops[0].external_id == '200000123'
 

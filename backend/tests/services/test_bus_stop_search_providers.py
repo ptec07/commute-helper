@@ -126,6 +126,27 @@ def test_gyeonggi_bus_stop_search_falls_back_to_bus_realtime_route_station_api(m
     assert calls[2][1] == {'serviceKey': 'secret', 'routeId': '222000107', 'format': 'xml'}
 
 
+def test_gyeonggi_bus_stop_search_skips_route_fallback_for_station_name_queries(monkeypatch):
+    calls = []
+
+    def fake_get(url, params, timeout):
+        calls.append((url, params, timeout))
+        if url == 'https://apis.data.go.kr/6410000/busstationservice/v2/getBusStationListv2':
+            return FakeResponse('Forbidden', status_code=403)
+        raise AssertionError(f'unexpected route fallback url for station query: {url}')
+
+    monkeypatch.setattr(httpx, 'get', fake_get)
+
+    provider = GyeonggiBusStopSearchProvider(service_key='secret')
+
+    with pytest.raises(OSError):
+        provider.fetch('판교역')
+
+    assert [call[0] for call in calls] == [
+        'https://apis.data.go.kr/6410000/busstationservice/v2/getBusStationListv2'
+    ]
+
+
 def test_bus_stop_search_provider_raises_oserror_for_auth_failure(monkeypatch):
     xml = '''<?xml version="1.0" encoding="UTF-8"?>
     <ServiceResult><msgHeader><headerCd>7</headerCd><headerMsg>Key인증실패</headerMsg></msgHeader></ServiceResult>'''
